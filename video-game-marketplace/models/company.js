@@ -8,18 +8,17 @@ const Company = sequelize.define('Company', {
   },
   logo: {
     type: DataTypes.STRING,
-    allowNull: true,
+    allowNull: true,  // El logo puede ser opcional
   },
   description: {
     type: DataTypes.STRING,
-    allowNull: true,
+    allowNull: true,  // Descripción opcional
   },
   email: {
     type: DataTypes.STRING,
     allowNull: false,
     unique: true,
-  },
-  password: {
+  },password: {
     type: DataTypes.STRING,
     allowNull: false,
   },
@@ -27,12 +26,6 @@ const Company = sequelize.define('Company', {
     type: DataTypes.STRING,
     allowNull: false,
     unique: true,
-  },
-}, {
-  hooks: {
-    beforeCreate: async (company) => {
-      // Hash the password here if needed
-    },
   },
 });
 

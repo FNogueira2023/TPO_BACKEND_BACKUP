@@ -1,5 +1,6 @@
 const { DataTypes } = require('sequelize');
 const sequelize = require('../config/database');
+const Company = require('./company');  // Relación con Company
 
 const Game = sequelize.define('Game', {
   name: {
@@ -14,11 +15,18 @@ const Game = sequelize.define('Game', {
     type: DataTypes.FLOAT,
     allowNull: false,
   },
+  rating: {
+    type: DataTypes.TINYINT,
+    allowNull: false,
+    validate: {
+      min: 1, // Minimum rating is 1
+      max: 4, // Maximum rating is 4
+    }
+  },
   genre: {
     type: DataTypes.STRING,
     allowNull: false,
-  },
-  os: {
+  }, os: {
     type: DataTypes.ENUM('Windows', 'Mac', 'Linux'), // Restrict to specific OS
     allowNull: false,
   },
@@ -30,28 +38,18 @@ const Game = sequelize.define('Game', {
     type: DataTypes.STRING,
     allowNull: true,
   },
-  rating: {
-    type: DataTypes.TINYINT,
-    allowNull: false,
-    validate: {
-      min: 1, // Minimum rating is 1
-      max: 4, // Maximum rating is 4
-    },
-  },
-  releaseDate: {
-    type: DataTypes.DATE,
-    allowNull: true,
-  },
-
   isPublished: {
     type: DataTypes.BOOLEAN,
     defaultValue: false,
   },
-}, {
-  tableName: 'games', // Specify table name if not the default 'games'
-  timestamps: true, // Adds createdAt and updatedAt fields automatically
+  companyId: {
+    type: DataTypes.INTEGER,
+    allowNull: false,
+    references: {
+      model: Company,
+      key: 'id',
+    },
+  },
 });
-
-
 
 module.exports = Game;

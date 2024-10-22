@@ -1,5 +1,7 @@
 const { DataTypes } = require('sequelize');
 const sequelize = require('../config/database');
+const User = require('./user');
+const Game = require('./game');
 
 const Order = sequelize.define('Order', {
   totalPrice: {
@@ -13,13 +15,16 @@ const Order = sequelize.define('Order', {
   status: {
     type: DataTypes.STRING,
     allowNull: false,
-    defaultValue: 'pending',  // Possible values: "pending", "completed", "cancelled", etc.
+    defaultValue: 'pending',  // "pending", "completed", "cancelled", etc.
   },
-
-}, {
-  tableName: 'orders', // Specify the table name if not the default
-  timestamps: true, // Automatically add createdAt and updatedAt fields
+  userId: {
+    type: DataTypes.INTEGER,
+    allowNull: false,
+    references: {
+      model: User,
+      key: 'id',
+    },
+  },
 });
-
 
 module.exports = Order;

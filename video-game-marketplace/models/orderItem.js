@@ -1,21 +1,33 @@
 const { DataTypes } = require('sequelize');
 const sequelize = require('../config/database');
+const Order = require('./order');
+const Game = require('./game');
 
 const OrderItem = sequelize.define('OrderItem', {
   quantity: {
     type: DataTypes.INTEGER,
-    allowNull: false,
-    defaultValue: 1, // Default quantity is 1
+    defaultValue: 1,
   },
   price: {
     type: DataTypes.FLOAT,
     allowNull: false,
   },
-
-}, {
-  tableName: 'order_items', // Specify the table name if not the default
-  timestamps: true, // Automatically add createdAt and updatedAt fields
+  orderId: {
+    type: DataTypes.INTEGER,
+    allowNull: false,
+    references: {
+      model: Order,
+      key: 'id',
+    },
+  },
+  gameId: {
+    type: DataTypes.INTEGER,
+    allowNull: false,
+    references: {
+      model: Game,
+      key: 'id',
+    },
+  },
 });
-
 
 module.exports = OrderItem;
