@@ -5,7 +5,7 @@ const router = express.Router();
 
 // Company registration and login routes
 router.post('/companies/signup', companyController.companySignup);
-router.post('/companies/login', companyController.companyLogin);
+// router.post('/companies/login', companyController.companyLogin);
 
 // Routes protected by authentication
 router.get('/companies/profile', authMiddleware, companyController.getCompanyProfile);

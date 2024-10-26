@@ -5,7 +5,7 @@ const router = express.Router();
 
 // Rutas de autenticación
 router.post('/users/signup', userController.signup);
-router.post('/users/login', userController.login);
+// router.post('/users/login', userController.login);
 
 // Rutas protegidas
 router.get('/profile', authMiddleware, (req, res) => {

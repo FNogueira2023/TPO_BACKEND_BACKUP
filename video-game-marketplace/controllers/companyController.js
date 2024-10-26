@@ -81,17 +81,14 @@ exports.getCompanyGames = async (req, res) => {
 // Company signup (register)
 exports.companySignup = async (req, res) => {
   try {
-    const { name, email, password, cuit } = req.body;
+    const { name, email, password } = req.body;
 
     // Check if company with the same email or cuit already exists
     const existingCompany = await Company.findOne({ where: { email } });
-    const existingCuit = await Company.findOne({ where: { cuit } });
     if (existingCompany) {
       return res.status(400).json({ error: 'Email is already in use' });
     }
-    if (existingCuit) {
-      return res.status(400).json({ error: 'CUIT is already in use' });
-    }
+    
 
     // Hash the password before saving
     const salt = await bcrypt.genSalt(10);
@@ -102,7 +99,6 @@ exports.companySignup = async (req, res) => {
       name,
       email,
       password: hashedPassword,
-      cuit,
     });
 
     res.status(201).json({ message: 'Company registered successfully' });
@@ -113,6 +109,7 @@ exports.companySignup = async (req, res) => {
 };
 
 // Company login
+/*
 exports.companyLogin = async (req, res) => {
   try {
     const { email, password } = req.body;
@@ -139,4 +136,5 @@ exports.companyLogin = async (req, res) => {
     res.status(500).json({ error: 'Error logging in' });
   }
 };
+*/
 

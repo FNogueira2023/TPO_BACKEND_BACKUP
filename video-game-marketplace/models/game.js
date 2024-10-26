@@ -42,6 +42,10 @@ const Game = sequelize.define('Game', {
     type: DataTypes.BOOLEAN,
     defaultValue: false,
   },
+  imageUrl: {
+    type: DataTypes.STRING,  // URL de la imagen
+    allowNull: true,
+  },
   companyId: {
     type: DataTypes.INTEGER,
     allowNull: false,

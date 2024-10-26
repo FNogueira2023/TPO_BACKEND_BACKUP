@@ -38,6 +38,7 @@ exports.signup = async (req, res) => {
 };
 
 // Iniciar sesión
+/*
 exports.login = async (req, res) => {
   try {
     const { email, password } = req.body;
@@ -72,6 +73,7 @@ exports.login = async (req, res) => {
     res.status(500).json({ error: 'Error logging in' });
   }
 };
+*/
 
 // Obtener el perfil del usuario autenticado
 exports.getProfile = async (req, res) => {

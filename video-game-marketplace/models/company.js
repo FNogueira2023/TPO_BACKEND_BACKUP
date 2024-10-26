@@ -1,5 +1,6 @@
 const { DataTypes } = require('sequelize');
 const sequelize = require('../config/database');
+const bcrypt = require('bcryptjs');
 
 const Company = sequelize.define('Company', {
   name: {
@@ -18,15 +19,19 @@ const Company = sequelize.define('Company', {
     type: DataTypes.STRING,
     allowNull: false,
     unique: true,
-  },password: {
+  },
+  password: {
     type: DataTypes.STRING,
     allowNull: false,
   },
-  cuit: {
-    type: DataTypes.STRING,
-    allowNull: false,
-    unique: true,
-  },
+}, {
+    hooks: {
+      beforeCreate: async (company) => {
+        const salt = await bcrypt.genSalt(10);
+        company.password = await bcrypt.hash(company.password, salt);
+      }
+    }
+  
 });
 
 module.exports = Company;

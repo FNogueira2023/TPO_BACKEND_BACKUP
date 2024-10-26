@@ -15,6 +15,7 @@ exports.createGame = async (req, res) => {
       language,
       playerMode,
       gameRating,
+      imageURL,
       companyId,
     });
 
@@ -66,7 +67,7 @@ exports.getGameById = async (req, res) => {
 exports.updateGame = async (req, res) => {
   try {
     const { gameId } = req.params;
-    const { name, description, price, category, os, language, playerMode, gameRating } = req.body;
+    const { name, description, price, category, os, language, playerMode, gameRating, imageURL } = req.body;
     const companyId = req.user.companyId;
 
     const game = await Game.findOne({ where: { id: gameId, companyId } });
@@ -74,7 +75,7 @@ exports.updateGame = async (req, res) => {
       return res.status(404).json({ error: 'Game not found or not owned by this company' });
     }
 
-    // Update fields if provided in the request body
+    // Actualiza campos opcionales
     game.name = name || game.name;
     game.description = description || game.description;
     game.price = price || game.price;
@@ -83,6 +84,7 @@ exports.updateGame = async (req, res) => {
     game.language = language || game.language;
     game.playerMode = playerMode || game.playerMode;
     game.gameRating = gameRating || game.gameRating;
+    game.imageURL = imageURL || game.imageURL;
 
     await game.save();
     res.json(game);
@@ -91,7 +93,7 @@ exports.updateGame = async (req, res) => {
   }
 };
 
-// Delete a game
+// Borrar un juego
 exports.deleteGame = async (req, res) => {
   try {
     const { gameId } = req.params;
