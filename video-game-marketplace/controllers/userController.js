@@ -1,12 +1,15 @@
 const jwt = require('jsonwebtoken');
 const bcrypt = require('bcryptjs');
 const User = require('../models/user');
+const Company = require('../models/company');
+const CompanyController = require('./companyController');
+
 
 // Registrar un nuevo usuario
 exports.signup = async (req, res) => {
   try {
     console.log(req.body);
-    const { name, lastName, email, password, birthDate } = req.body;
+    const { name, lastName, email, password, birthDate, userType } = req.body;
 
     // Verificar si el usuario ya existe
     let user = await User.findOne({ where: { email } });
@@ -15,7 +18,7 @@ exports.signup = async (req, res) => {
     }
 
     // Crear un nuevo usuario
-    user = await User.create({ name, lastName, email, password, birthDate });
+    user = await User.create({ name, lastName, email, password, birthDate, userType });
 
     // Generar un token JWT
     const token = jwt.sign({ id: user.id }, 'your_jwt_secret', { expiresIn: '1h' });
@@ -29,36 +32,51 @@ exports.signup = async (req, res) => {
         lastName: user.lastName,
         email: user.email,
         birthDate: user.birthDate,
+        userType: user.userType,  // Include userType in response
       }
     });
+
+
+    // Crear empresa si el usuario es de tipo 'company'
+    if (userType === 'company') {
+      const company = await Company.create({
+        name, // You may want to change this to a different name if needed
+        userId: user.id, // Associate the company with the user
+      });
+      console.log('Company created:', company);
+    }
+
+
+
   } catch (error) {
-    // res.status(500).json({ error: 'Error registering user' });
     res.status(500).json({ error: error });
   }
 };
 
-// Iniciar sesión
-/*
+
+// loguearse
+// Login function for the user
 exports.login = async (req, res) => {
   try {
     const { email, password } = req.body;
 
-    // Buscar el usuario por email
+    // Check if user exists
     const user = await User.findOne({ where: { email } });
     if (!user) {
-      return res.status(401).json({ error: 'Invalid credentials' });
+      return res.status(401).json({ error: 'Invalid email or password' });
     }
 
-    // Validar la contraseña
-    const isValidPassword = await user.validPassword(password);
-    if (!isValidPassword) {
-      return res.status(401).json({ error: 'Invalid credentials' });
+    // Validate password
+    const isPasswordValid = await user.validPassword(password);
+    if (!isPasswordValid) {
+      return res.status(401).json({ error: 'Invalid email or password' });
     }
 
-    // Generar un token JWT
+    // Generate JWT token
     const token = jwt.sign({ id: user.id }, 'your_jwt_secret', { expiresIn: '1h' });
 
-    res.json({
+    // Send response
+    res.status(200).json({
       message: 'Login successful',
       token,
       user: {
@@ -67,13 +85,15 @@ exports.login = async (req, res) => {
         lastName: user.lastName,
         email: user.email,
         birthDate: user.birthDate,
-      }
+        userType: user.userType, // Include userType in response
+      },
     });
   } catch (error) {
-    res.status(500).json({ error: 'Error logging in' });
+    console.error('Error during login:', error); // Log the error for debugging
+    res.status(500).json({ error: 'Internal server error' });
   }
 };
-*/
+
 
 // Obtener el perfil del usuario autenticado
 exports.getProfile = async (req, res) => {
@@ -81,7 +101,7 @@ exports.getProfile = async (req, res) => {
     const userId = req.user.id;
 
     const user = await User.findByPk(userId, {
-      attributes: ['id', 'name', 'lastName', 'email', 'birthDate'],
+      attributes: ['id', 'name', 'lastName', 'email', 'birthDate', 'userType'],  // Include userType
     });
 
     if (!user) {
@@ -93,3 +113,4 @@ exports.getProfile = async (req, res) => {
     res.status(500).json({ error: 'Error fetching profile' });
   }
 };
+

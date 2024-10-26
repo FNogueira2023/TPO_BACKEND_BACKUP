@@ -1,6 +1,7 @@
 const { DataTypes } = require('sequelize');
 const sequelize = require('../config/database');
 const bcrypt = require('bcryptjs');
+const User = require('./user');
 
 const Company = sequelize.define('Company', {
   name: {
@@ -11,18 +12,18 @@ const Company = sequelize.define('Company', {
     type: DataTypes.STRING,
     allowNull: true,  // El logo puede ser opcional
   },
+
   description: {
     type: DataTypes.STRING,
     allowNull: true,  // Descripción opcional
   },
-  email: {
-    type: DataTypes.STRING,
+  userId: { // New foreign key to associate with User
+    type: DataTypes.INTEGER,
     allowNull: false,
-    unique: true,
-  },
-  password: {
-    type: DataTypes.STRING,
-    allowNull: false,
+    references: {
+      model: User,
+      key: 'id',
+    },
   },
 }, {
     hooks: {

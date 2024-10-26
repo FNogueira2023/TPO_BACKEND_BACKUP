@@ -10,7 +10,6 @@ const orderRoutes = require('./routes/orderRoutes');
 const paymentMethodRoutes = require('./routes/paymentMethodRoutes');
 const profileRoutes = require('./routes/profileRoutes');
 const wishlistRoutes = require('./routes/wishlistRoutes');
-const authRoutes = require('./routes/authRoutes');
 const sequelize = require('./config/database');
 const authMiddleware = require('./middlewares/authMiddleware');
 const cors = require('cors');
@@ -47,9 +46,6 @@ app.use(profileRoutes);
 
 // Rutas de la wishlist
 app.use(wishlistRoutes);
-
-// Rutas de autenticación compartidas
-app.use(authRoutes);
 
 //Rutas de middleware
 app.use(authMiddleware);

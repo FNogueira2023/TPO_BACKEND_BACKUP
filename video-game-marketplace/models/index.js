@@ -49,6 +49,12 @@ PaymentMethod.belongsTo(User, { foreignKey: 'userId' });
 User.hasMany(Wishlist, { foreignKey: 'userId', onDelete: 'CASCADE' });
 Wishlist.belongsTo(User, { foreignKey: 'userId' });
 
+//Relacion entre user y company
+User.hasOne(Company, {
+    foreignKey: 'userId', // Foreign key in the Company model
+    as: 'company',        // Alias for association
+});
+
 // Relación entre Game y Wishlist
 Game.hasMany(Wishlist, { foreignKey: 'gameId', onDelete: 'CASCADE' });
 Wishlist.belongsTo(Game, { foreignKey: 'gameId' });
