@@ -16,6 +16,9 @@ CartItem.belongsTo(Cart, { foreignKey: 'cartId' });
 Game.hasMany(CartItem, { foreignKey: 'gameId' });
 CartItem.belongsTo(Game, { foreignKey: 'gameId' });
 
+// Relación entre User y Cart
+User.hasOne(Cart, { foreignKey: 'userId', onDelete: 'CASCADE' });
+Cart.belongsTo(User, { foreignKey: 'userId' });
 
 // Relaciones entre Comment y Game
 Game.hasMany(Comment, { foreignKey: 'gameId', onDelete: 'CASCADE' });

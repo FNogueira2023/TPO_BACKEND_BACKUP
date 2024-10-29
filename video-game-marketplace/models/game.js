@@ -54,6 +54,9 @@ const Game = sequelize.define('Game', {
       key: 'id',
     },
   },
+},
+{
+  timestamps: true, // Enable createdAt and updatedAt fields
 });
 
 module.exports = Game;
