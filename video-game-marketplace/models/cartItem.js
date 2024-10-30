@@ -15,6 +15,7 @@ const CartItem = sequelize.define('CartItem', {
     type: DataTypes.INTEGER,
     defaultValue: 1,
   },
+
 });
 
 module.exports = CartItem;

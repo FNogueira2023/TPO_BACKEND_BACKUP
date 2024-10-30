@@ -9,7 +9,6 @@ const gameRoutes = require('./routes/gameRoutes');
 const orderRoutes = require('./routes/orderRoutes');
 const paymentMethodRoutes = require('./routes/paymentMethodRoutes');
 const profileRoutes = require('./routes/profileRoutes');
-const wishlistRoutes = require('./routes/wishlistRoutes');
 const sequelize = require('./config/database');
 const authMiddleware = require('./middlewares/authMiddleware');
 const cors = require('cors');
@@ -43,9 +42,6 @@ app.use(paymentMethodRoutes);
 
 // Rutas del perfil de usuario
 app.use(profileRoutes);
-
-// Rutas de la wishlist
-app.use(wishlistRoutes);
 
 //Rutas de middleware
 app.use(authMiddleware);

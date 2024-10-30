@@ -1,11 +1,20 @@
 const express = require('express');
-const wishlistController = require('../controllers/wishlistController');
-const authMiddleware = require('../middlewares/authMiddleware');
 const router = express.Router();
+const wishlistController = require('./controllers/wishlistController');
 
-// Rutas para gestionar la wishlist
-router.post('/wishlist', authMiddleware, wishlistController.addToWishlist);  // Agregar a wishlist
-router.get('/wishlist', authMiddleware, wishlistController.getWishlist);  // Obtener la wishlist
-router.delete('/wishlist', authMiddleware, wishlistController.removeFromWishlist);  // Eliminar de wishlist
+// Create a new wishlist
+router.post('/wishlists', wishlistController.createWishlist);
+
+// Get a user's wishlist
+router.get('/wishlists/:userId', wishlistController.getWishlist);
+
+// Add a game to the wishlist
+router.post('/wishlists/items', wishlistController.addItemToWishlist);
+
+// Get items in a wishlist
+router.get('/wishlists/:wishlistId/items', wishlistController.getWishlistItems);
+
+// Remove a game from the wishlist
+router.delete('/wishlists/items/:itemId', wishlistController.removeItemFromWishlist);
 
 module.exports = router;

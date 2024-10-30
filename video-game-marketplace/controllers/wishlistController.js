@@ -1,64 +1,67 @@
 const Wishlist = require('../models/wishlist');
+const WishlistItem = require('../models/wishlistItem');
 const Game = require('../models/game');
 
-// Agregar un juego a la wishlist del usuario autenticado
-exports.addToWishlist = async (req, res) => {
+// Create a new wishlist
+exports.createWishlist = async (req, res) => {
   try {
-    const userId = req.user.id;
-    const { gameId } = req.body;
-
-    // Verificar si el juego ya está en la wishlist del usuario
-    const existingEntry = await Wishlist.findOne({ where: { userId, gameId } });
-    if (existingEntry) {
-      return res.status(400).json({ error: 'Game already in wishlist' });
-    }
-
-    // Agregar el juego a la wishlist
-    const wishlistItem = await Wishlist.create({ userId, gameId });
-    res.status(201).json(wishlistItem);
+    const { userId } = req.body; // Assume userId is sent in the request body
+    const wishlist = await Wishlist.create({ userId });
+    res.status(201).json(wishlist);
   } catch (error) {
-    console.error('Error adding to wishlist:', error);
-    res.status(500).json({ error: 'Error adding to wishlist' });
+    res.status(500).json({ message: error.message });
   }
 };
 
-// Obtener la wishlist del usuario autenticado
+// Get a user's wishlist
 exports.getWishlist = async (req, res) => {
   try {
-    const userId = req.user.id;
-
-    const wishlist = await Wishlist.findAll({
-      where: { userId },
-      include: { model: Game, attributes: ['id', 'name', 'price', 'description'] },
-    });
-
-    if (wishlist.length === 0) {
-      return res.status(404).json({ error: 'No games in wishlist' });
+    const { userId } = req.params; // Get userId from request params
+    const wishlist = await Wishlist.findOne({ where: { userId } });
+    if (!wishlist) {
+      return res.status(404).json({ message: 'Wishlist not found' });
     }
-
-    res.json(wishlist);
+    res.status(200).json(wishlist);
   } catch (error) {
-    console.error('Error fetching wishlist:', error);
-    res.status(500).json({ error: 'Error fetching wishlist' });
+    res.status(500).json({ message: error.message });
   }
 };
 
-// Eliminar un juego de la wishlist del usuario autenticado
-exports.removeFromWishlist = async (req, res) => {
+// Add a game to the wishlist
+exports.addItemToWishlist = async (req, res) => {
   try {
-    const userId = req.user.id;
-    const { gameId } = req.body;
-
-    const wishlistItem = await Wishlist.findOne({ where: { userId, gameId } });
-
-    if (!wishlistItem) {
-      return res.status(404).json({ error: 'Game not found in wishlist' });
-    }
-
-    await wishlistItem.destroy();
-    res.status(204).send();
+    const { wishlistId, gameId } = req.body; // Assume wishlistId and gameId are sent in the request body
+    const wishlistItem = await WishlistItem.create({ wishlistId, gameId });
+    res.status(201).json(wishlistItem);
   } catch (error) {
-    console.error('Error removing from wishlist:', error);
-    res.status(500).json({ error: 'Error removing from wishlist' });
+    res.status(500).json({ message: error.message });
+  }
+};
+
+// Get items in a wishlist
+exports.getWishlistItems = async (req, res) => {
+  try {
+    const { wishlistId } = req.params; // Get wishlistId from request params
+    const items = await WishlistItem.findAll({
+      where: { wishlistId },
+      include: [{ model: Game }], // Include game details
+    });
+    res.status(200).json(items);
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+};
+
+// Remove a game from the wishlist
+exports.removeItemFromWishlist = async (req, res) => {
+  try {
+    const { itemId } = req.params; // Get itemId from request params
+    const deletedItem = await WishlistItem.destroy({ where: { id: itemId } });
+    if (!deletedItem) {
+      return res.status(404).json({ message: 'Item not found' });
+    }
+    res.status(204).send(); // No content response
+  } catch (error) {
+    res.status(500).json({ message: error.message });
   }
 };

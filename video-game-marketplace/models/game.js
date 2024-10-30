@@ -53,7 +53,7 @@ const Game = sequelize.define('Game', {
       model: Company,
       key: 'id',
     },
-  },
+  }
 },
 {
   timestamps: true, // Enable createdAt and updatedAt fields

@@ -8,6 +8,7 @@ const Order = require('./order');
 const OrderItem = require('./orderItem');
 const PaymentMethod = require('./paymentMethod');
 const Wishlist = require('./wishlist');
+const WishlistItem = require('./wishlistItem')
 
 // Relaciones
 Cart.hasMany(CartItem, { foreignKey: 'cartId', onDelete: 'CASCADE' });
@@ -48,16 +49,14 @@ OrderItem.belongsTo(Game, { foreignKey: 'gameId' });
 User.hasMany(PaymentMethod, { foreignKey: 'userId', onDelete: 'CASCADE' });
 PaymentMethod.belongsTo(User, { foreignKey: 'userId' });
 
-// Relación entre User y Wishlist
-User.hasMany(Wishlist, { foreignKey: 'userId', onDelete: 'CASCADE' });
-Wishlist.belongsTo(User, { foreignKey: 'userId' });
-
 //Relacion entre user y company
 User.hasOne(Company, {
     foreignKey: 'userId', // Foreign key in the Company model
     as: 'company',        // Alias for association
 });
 
-// Relación entre Game y Wishlist
-Game.hasMany(Wishlist, { foreignKey: 'gameId', onDelete: 'CASCADE' });
-Wishlist.belongsTo(Game, { foreignKey: 'gameId' });
+// Wishlist
+Wishlist.belongsTo(User, { foreignKey: 'userId', onDelete: 'CASCADE' });
+
+WishlistItem.belongsTo(Wishlist, { foreignKey: 'wishlistId', onDelete: 'CASCADE' });
+WishlistItem.belongsTo(Game, { foreignKey: 'gameId', onDelete: 'CASCADE' });
