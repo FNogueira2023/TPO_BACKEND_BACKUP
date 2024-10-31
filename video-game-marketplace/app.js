@@ -9,6 +9,7 @@ const gameRoutes = require('./routes/gameRoutes');
 const orderRoutes = require('./routes/orderRoutes');
 const paymentMethodRoutes = require('./routes/paymentMethodRoutes');
 const profileRoutes = require('./routes/profileRoutes');
+const wishlistRoutes = require('./routes/wishlistRoutes');
 const sequelize = require('./config/database');
 const authMiddleware = require('./middlewares/authMiddleware');
 const cors = require('cors');
@@ -17,10 +18,20 @@ const app = express();
 app.use(bodyParser.json());
 app.use(cors());
 
-app.use(userRoutes);  // Agregar rutas de usuario
+
+
+
+
+// Agregar rutas de usuario
+
+app.use(userRoutes);
+
+// Rutas del wishlist
+app.use(wishlistRoutes);
 
 // Rutas del carrito
 app.use(cartRoutes);
+
 
 // Rutas de comentarios
 app.use(commentRoutes);
@@ -45,6 +56,8 @@ app.use(profileRoutes);
 
 //Rutas de middleware
 app.use(authMiddleware);
+
+
 
 // Conectar a la base de datos
 sequelize.sync()
