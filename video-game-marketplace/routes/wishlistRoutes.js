@@ -13,7 +13,7 @@ router.get('/wishlists/:userId',authMiddleware, wishlistController.getWishlist);
 router.post('/wishlists/items',authMiddleware, wishlistController.addItemToWishlist);
 
 // Get items in a wishlist
-router.get('/wishlists/:userId/items',authMiddleware, wishlistController.getWishlistItems);
+router.get('/wishlists/items/all',authMiddleware, wishlistController.getWishlistItems);
 
 // Remove a game from the wishlist
 router.delete('/wishlists/items/:gameId',authMiddleware, wishlistController.removeItemFromWishlist);

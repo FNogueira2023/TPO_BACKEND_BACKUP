@@ -101,7 +101,7 @@ exports.getProfile = async (req, res) => {
     const userId = req.user.id;
 
     const user = await User.findByPk(userId, {
-      attributes: ['id', 'name', 'lastName', 'email', 'birthDate', 'userType'],  // Include userType
+      attributes: ['id', 'name', 'lastName', 'email', 'birthDate', 'userType'],
     });
 
     if (!user) {

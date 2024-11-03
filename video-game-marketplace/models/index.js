@@ -10,6 +10,16 @@ const PaymentMethod = require('./paymentMethod');
 const Wishlist = require('./wishlist');
 const WishlistItem = require('./wishlistItem');
 
+
+
+// Wishlist Associations
+Wishlist.belongsTo(User, { foreignKey: 'userId', onDelete: 'CASCADE' });
+WishlistItem.belongsTo(Wishlist, { foreignKey: 'wishlistId', onDelete: 'CASCADE' });
+WishlistItem.belongsTo(Game, { foreignKey: 'gameId', onDelete: 'CASCADE' });
+Game.hasMany(WishlistItem, { foreignKey: 'gameId' });
+
+
+
 // Cart Associations
 Cart.hasMany(CartItem, { foreignKey: 'cartId', onDelete: 'CASCADE' });
 CartItem.belongsTo(Cart, { foreignKey: 'cartId' });
@@ -50,7 +60,4 @@ User.hasOne(Company, {
     as: 'company',        // Alias for association
 });
 
-// Wishlist Associations
-Wishlist.belongsTo(User, { foreignKey: 'userId', onDelete: 'CASCADE' });
-WishlistItem.belongsTo(Wishlist, { foreignKey: 'wishlistId', onDelete: 'CASCADE' });
-WishlistItem.belongsTo(Game, { foreignKey: 'gameId', onDelete: 'CASCADE' }); // Game association with WishlistItem
+

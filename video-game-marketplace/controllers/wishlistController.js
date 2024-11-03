@@ -86,20 +86,24 @@ exports.addItemToWishlist = async (req, res) => {
 exports.getWishlistItems = async (req, res) => {
   try {
     const userId = req.user.id; // Assuming user ID is available in req.user from authMiddleware
-    const wishlist = await Wishlist.findOne({ where: { userId } }); // Find the wishlist for the user
 
+    // Find the wishlist for the user
+    const wishlist = await Wishlist.findOne({ where: { userId } });
+
+
+    // Check if the wishlist exists
     if (!wishlist) {
       return res.status(404).json({ message: 'Wishlist not found for this user.' });
     }
 
-    const { id: wishlistId } = wishlist; // Get the wishlistId
+    const wishlistId = wishlist.id; // Get the wishlistId
 
-    // Now fetch the items for the found wishlist
+    // Fetch the items for the found wishlist, including game details
     const items = await WishlistItem.findAll({
-      where: { wishlistId },
-      include: [{ model: Game }], // Include game details
+      where: { wishlistId }, // Use the correct variable name for the condition
     });
 
+    // Respond with the fetched items
     res.status(200).json(items);
   } catch (error) {
     console.error('Error fetching wishlist items:', error); // Log the error for debugging
@@ -111,23 +115,36 @@ exports.getWishlistItems = async (req, res) => {
 // Remove a game from the wishlist
 exports.removeItemFromWishlist = async (req, res) => {
   try {
-    const { gameId } = req.body; // Get gameId from the request body
+    const userId = req.user.id; // User ID from authenticated request
+    const { gameId } = req.body;
 
     // Check if gameId is provided
     if (!gameId) {
       return res.status(400).json({ message: 'gameId is required.' });
     }
 
-    // Use gameId to find and delete the WishlistItem
-    const deletedItem = await WishlistItem.destroy({ where: { gameId: gameId } });
+    // Find the user's wishlist
+    const wishlist = await Wishlist.findOne({ where: { userId } });
 
-    if (!deletedItem) {
-      return res.status(404).json({ message: 'Item not found' });
+    if (!wishlist) {
+      return res.status(404).json({ message: 'Wishlist not found for this user.' });
     }
 
-    res.status(204).send(); // Successfully deleted
+    // Delete the WishlistItem for the specific user and game
+    const deletedItem = await WishlistItem.destroy({
+      where: {
+        wishlistId: wishlist.id,
+        gameId: gameId
+      }
+    });
+
+    if (!deletedItem) {
+      return res.status(404).json({ message: 'Item not found in your wishlist.' });
+    }
+
+    res.status(204).send(); // No content, successful deletion
   } catch (error) {
-    console.error('Error removing item from wishlist:', error); // Optional: log the error
+    console.error('Error removing item from wishlist:', error);
     res.status(500).json({ message: error.message });
   }
 };

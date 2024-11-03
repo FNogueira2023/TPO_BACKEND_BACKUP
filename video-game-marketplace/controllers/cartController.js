@@ -124,3 +124,30 @@ exports.checkoutCart = async (req, res) => {
     res.status(500).json({ error: 'Error during checkout' });
   }
 };
+
+
+// Get all cart items for the user's cart
+exports.getAllCartItems = async (req, res) => {
+  try {
+    const userId = req.user.id;
+
+    // Find the cart associated with the user
+    const cart = await Cart.findOne({
+      where: { userId }
+    });
+
+    if (!cart) {
+      return res.status(404).json({ error: 'Cart not found for this user' });
+    }
+
+    // Use cartId to find all cart items
+    const cartItems = await CartItem.findAll({
+      where: { cartId: cart.id }
+    });
+
+    res.json(cartItems);
+  } catch (error) {
+    console.error('Error fetching cart items:', error);
+    res.status(500).json({ error: 'Server error' });
+  }
+};
