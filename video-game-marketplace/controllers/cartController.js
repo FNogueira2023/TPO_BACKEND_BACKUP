@@ -125,7 +125,6 @@ exports.checkoutCart = async (req, res) => {
   }
 };
 
-
 // Get all cart items for the user's cart
 exports.getAllCartItems = async (req, res) => {
   try {

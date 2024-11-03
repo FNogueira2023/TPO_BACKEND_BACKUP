@@ -1,36 +1,47 @@
+const Cart = require('../models/cart');
+const CartItem = require('../models/cartItem');
+const Game = require('../models/game');
 const Order = require('../models/order');
 const OrderItem = require('../models/orderItem');
-const Game = require('../models/game');
 
 // Crear una nueva orden
 exports.createOrder = async (req, res) => {
   try {
-    const { games, totalPrice } = req.body;  // Lista de juegos y precio total
-    const userId = req.user.id;  // ID del usuario autenticado
+    const { games, totalPrice } = req.body;  // List of games and total price
+    const userId = req.user.id;  // ID of the authenticated user
 
-    // Crear la orden
+    // Create the order
     const newOrder = await Order.create({
       totalPrice,
       userId,
-      status: 'completed',  // Suponemos que el pago fue exitoso
+      status: 'completed',  // Assume payment was successful
     });
 
-    // Crear los elementos de la orden (OrderItems)
+    // Create the order items
     const orderItems = await Promise.all(
-      games.map(async (game) => {
-        const gameData = await Game.findByPk(game.gameId);
-        if (!gameData) {
-          return res.status(404).json({ error: 'Game not found' });
-        }
+        games.map(async (game) => {
+          const gameData = await Game.findByPk(game.gameId);
+          if (!gameData) {
+            throw new Error('Game not found');  // Trigger catch block if game is not found
+          }
 
-        return await OrderItem.create({
-          orderId: newOrder.id,
-          gameId: game.gameId,
-          quantity: game.quantity,
-          price: gameData.price,
-        });
-      })
+          return await OrderItem.create({
+            orderId: newOrder.id,
+            gameId: game.gameId,
+            quantity: game.quantity,
+            price: gameData.price,
+          });
+        })
     );
+
+    // Find and delete the user's cart and associated cart items
+    const cart = await Cart.findOne({ where: { userId } });
+    if (cart) {
+      await CartItem.destroy({ where: { cartId: cart.id } });
+      await cart.destroy();
+    } else {
+      console.warn(`No cart found for user with ID ${userId}`);
+    }
 
     res.status(201).json({ order: newOrder, orderItems });
   } catch (error) {
