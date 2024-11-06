@@ -25,14 +25,8 @@ const Company = sequelize.define('Company', {
       key: 'id',
     },
   },
-}, {
-    hooks: {
-      beforeCreate: async (company) => {
-        const salt = await bcrypt.genSalt(10);
-        company.password = await bcrypt.hash(company.password, salt);
-      }
-    }
+
   
-});
+})
 
 module.exports = Company;

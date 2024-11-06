@@ -2,14 +2,13 @@ const jwt = require('jsonwebtoken');
 const bcrypt = require('bcryptjs');
 const User = require('../models/user');
 const Company = require('../models/company');
-const CompanyController = require('./companyController');
-
 
 // Registrar un nuevo usuario
 exports.signup = async (req, res) => {
   try {
-    console.log(req.body);
     const { name, lastName, email, password, birthDate, userType } = req.body;
+
+
 
     // Verificar si el usuario ya existe
     let user = await User.findOne({ where: { email } });
@@ -18,10 +17,26 @@ exports.signup = async (req, res) => {
     }
 
     // Crear un nuevo usuario
-    user = await User.create({ name, lastName, email, password, birthDate, userType });
+    user = await User.create({ name, lastName, email, password, birthDate,userType });
 
     // Generar un token JWT
     const token = jwt.sign({ id: user.id }, 'your_jwt_secret', { expiresIn: '1h' });
+
+    // If the user is a company, create a company record
+    if (userType === 'company') {
+
+      try {
+        const company = await Company.create({
+          name,
+          userId: user.id,
+        });
+        console.log(user)
+        console.log('Company created:', company);
+      } catch (companyError) {
+        console.error('Error creating company:', companyError);
+        return res.status(500).json({ error: 'Error creating company' });
+      }
+    }
 
     res.status(201).json({
       message: 'User created successfully',
@@ -32,51 +47,37 @@ exports.signup = async (req, res) => {
         lastName: user.lastName,
         email: user.email,
         birthDate: user.birthDate,
-        userType: user.userType,  // Include userType in response
+        userType: user.userType
       }
     });
-
-
-    // Crear empresa si el usuario es de tipo 'company'
-    if (userType === 'company') {
-      const company = await Company.create({
-        name, // You may want to change this to a different name if needed
-        userId: user.id, // Associate the company with the user
-      });
-      console.log('Company created:', company);
-    }
-
-
-
   } catch (error) {
+    // res.status(500).json({ error: 'Error registering user' });
     res.status(500).json({ error: error });
   }
 };
 
+// Iniciar sesión
 
-// loguearse
-// Login function for the user
 exports.login = async (req, res) => {
   try {
     const { email, password } = req.body;
 
-    // Check if user exists
+    // Buscar el usuario por email
     const user = await User.findOne({ where: { email } });
     if (!user) {
-      return res.status(401).json({ error: 'Invalid email or password' });
+      return res.status(401).json({ error: 'Invalid credentials' });
     }
 
-    // Validate password
-    const isPasswordValid = await user.validPassword(password);
-    if (!isPasswordValid) {
-      return res.status(401).json({ error: 'Invalid email or password' });
+    // Validar la contraseña
+    const isValidPassword = await user.validPassword(password);
+    if (!isValidPassword) {
+      return res.status(401).json({ error: 'Invalid credentials' });
     }
 
-    // Generate JWT token
+    // Generar un token JWT
     const token = jwt.sign({ id: user.id }, 'your_jwt_secret', { expiresIn: '1h' });
 
-    // Send response
-    res.status(200).json({
+    res.json({
       message: 'Login successful',
       token,
       user: {
@@ -85,12 +86,11 @@ exports.login = async (req, res) => {
         lastName: user.lastName,
         email: user.email,
         birthDate: user.birthDate,
-        userType: user.userType, // Include userType in response
-      },
+        userType: user.userType
+      }
     });
   } catch (error) {
-    console.error('Error during login:', error); // Log the error for debugging
-    res.status(500).json({ error: 'Internal server error' });
+    res.status(500).json({ error: 'Error logging in' });
   }
 };
 
@@ -113,4 +113,6 @@ exports.getProfile = async (req, res) => {
     res.status(500).json({ error: 'Error fetching profile' });
   }
 };
+
+
 

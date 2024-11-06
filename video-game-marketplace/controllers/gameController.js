@@ -3,7 +3,7 @@ const Game = require('../models/game');
 // Create a new game
 exports.createGame = async (req, res) => {
   try {
-    const { name, description, price, category, os, language, playerMode, gameRating } = req.body;
+    const { name, description, price, category, os, language, playerMode } = req.body;
     const companyId = req.user.companyId;  // ID of the authenticated company
 
     const newGame = await Game.create({

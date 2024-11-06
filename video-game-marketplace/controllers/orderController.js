@@ -56,8 +56,7 @@ exports.getUserOrders = async (req, res) => {
     const userId = req.user.id;
 
     const orders = await Order.findAll({
-      where: { userId },
-      include: [OrderItem],  // Incluye los items de la orden
+      where: { userId }
     });
 
     if (orders.length === 0) {
