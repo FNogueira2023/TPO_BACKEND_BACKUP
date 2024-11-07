@@ -79,7 +79,7 @@ exports.createCompany = async (req, res) => {
 // Obtener todos los juegos de la compañía autenticada
 exports.getCompanyGames = async (req, res) => {
   try {
-    const companyId = req.user.companyId;
+    const companyId = req.query.companyId;
 
     const games = await Game.findAll({
       where: { companyId }
@@ -91,6 +91,7 @@ exports.getCompanyGames = async (req, res) => {
 
     res.json(games);
   } catch (error) {
+    console.log(error)
     res.status(500).json({ error: 'Error fetching company games' });
   }
 };
