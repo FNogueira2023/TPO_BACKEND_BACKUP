@@ -17,7 +17,7 @@ const Game = sequelize.define('Game', {
   },
   rating: {
     type: DataTypes.TINYINT,
-    allowNull: false,
+    allowNull: true,
     validate: {
       min: 1, // Minimum rating is 1
       max: 4, // Maximum rating is 4
@@ -42,7 +42,7 @@ const Game = sequelize.define('Game', {
     type: DataTypes.BOOLEAN,
     defaultValue: false,
   },
-  imageUrl: {
+  imageURL: {
     type: DataTypes.STRING,  // URL de la imagen
     allowNull: true,
   },

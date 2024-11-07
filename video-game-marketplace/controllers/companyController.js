@@ -94,3 +94,21 @@ exports.getCompanyGames = async (req, res) => {
     res.status(500).json({ error: 'Error fetching company games' });
   }
 };
+
+
+// Search for a company by userId
+exports.findCompanyByUserId = async (req, res) => {
+  try {
+    const { userId } = req.params;  // Assuming userId is passed as a route parameter
+
+    const company = await Company.findOne({ where: { userId } });
+
+    if (!company) {
+      return res.status(404).json({ error: 'Company not found for the given userId' });
+    }
+
+    res.json(company);
+  } catch (error) {
+    res.status(500).json({ error: 'Error finding company by userId' });
+  }
+};

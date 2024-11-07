@@ -13,12 +13,12 @@ const wishlistRoutes = require('./routes/wishlistRoutes');
 const sequelize = require('./config/database');
 const authMiddleware = require('./middlewares/authMiddleware');
 const cors = require('cors');
+const path = require('path');
 
 const app = express();
 app.use(bodyParser.json());
 app.use(cors());
-
-
+app.use('/gameImages', express.static(path.join(__dirname, 'public', 'gameImages')));
 
 
 

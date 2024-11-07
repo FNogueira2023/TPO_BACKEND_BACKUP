@@ -1,29 +1,43 @@
 const Game = require('../models/game');
+const path = require('path'); // Make sure path is available if needed for file handling
 
 // Create a new game
+
+
 exports.createGame = async (req, res) => {
   try {
-    const { name, description, price, category, os, language, playerMode } = req.body;
-    const companyId = req.user.companyId;  // ID of the authenticated company
+    // Extract game data from the request body (without the image)
+    const { name, genre, description, price, os, language, playerMode, companyId } = req.body;
 
+    // Check if the image was uploaded
+    if (!req.file) {
+      return res.status(400).json({ error: 'No image uploaded' });
+    }
+
+    // Use the uploaded image file to set the imageURL (stored in 'public/gameImages/')
+    const imageURL = `${req.file.filename}`;  // The relative URL to the saved image
+
+    // Create the new game entry in the database
     const newGame = await Game.create({
       name,
       description,
+      genre,
       price,
-      category,
       os,
       language,
       playerMode,
-      gameRating,
-      imageURL,
+      imageURL,  // Save the image URL in the game data
       companyId,
     });
 
+    // Respond with the created game data
     res.status(201).json(newGame);
   } catch (error) {
+    console.error(error);
     res.status(500).json({ error: 'Error creating game' });
   }
 };
+
 
 // Get all games (optionally filtered by category)
 exports.getAllGames = async (req, res) => {
