@@ -57,7 +57,6 @@ exports.signup = async (req, res) => {
 };
 
 // Iniciar sesión
-
 exports.login = async (req, res) => {
   try {
     const { email, password } = req.body;
@@ -95,13 +94,52 @@ exports.login = async (req, res) => {
 };
 
 
+exports.updateUser = async (req, res) => {
+  const { userId } = req.params;
+  const { name, lastName, email, bio } = req.body; // Removed avatar from destructuring
+
+  try {
+    // Find the user by their ID
+    const user = await User.findByPk(userId);
+
+    // If user doesn't exist, return an error
+    if (!user) {
+      return res.status(404).json({ message: 'User not found' });
+    }
+
+    // Update only the fields that are provided in the request
+    const updatedData = {
+      name: name || user.name,
+      lastName: lastName || user.lastName,
+      email: email || user.email,
+      bio: bio || user.bio,
+    };
+
+    // Update the user
+    await user.update(updatedData, { silent: true });
+
+
+    // Reload the user instance to get the updated data
+    await user.reload();
+
+
+    // Respond with the updated user
+    return res.status(200).json({ message: 'User updated successfully', user: user });
+
+  } catch (error) {
+    console.error(error);
+    return res.status(500).json({ message: 'Server error', error: error.message });
+  }
+};
+
+
 // Obtener el perfil del usuario autenticado
 exports.getProfile = async (req, res) => {
   try {
     const userId = req.user.id;
 
     const user = await User.findByPk(userId, {
-      attributes: ['id', 'name', 'lastName', 'email', 'birthDate', 'userType'],
+      attributes: ['id', 'name', 'lastName', 'email', 'birthDate', 'userType', 'bio'],
     });
 
     if (!user) {

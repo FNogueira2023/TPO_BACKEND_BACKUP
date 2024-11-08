@@ -7,6 +7,8 @@ const router = express.Router();
 router.post('/users/signup', userController.signup);
 router.post('/users/login', userController.login);
 
+router.put('/users/update/:userId',authMiddleware, userController.updateUser);
+
 // Rutas protegidas
 router.get('/profile', authMiddleware, userController.getProfile);
 

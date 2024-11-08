@@ -37,13 +37,20 @@ exports.createOrder = async (req, res) => {
     // Find and delete the user's cart and associated cart items
     const cart = await Cart.findOne({ where: { userId } });
     if (cart) {
-      await CartItem.destroy({ where: { cartId: cart.id } });
-      await cart.destroy();
+      await CartItem.destroy({ where: { cartId: cart.id } });  // Delete all cart items
+      await cart.destroy();  // Delete the cart
     } else {
       console.warn(`No cart found for user with ID ${userId}`);
     }
 
-    res.status(201).json({ order: newOrder, orderItems });
+    // Create a new empty cart for the user
+    const newCart = await Cart.create({
+      userId,
+      totalPrice: 0, // Start with 0 total price
+    });
+
+    // Respond with the created order, its items, and the new empty cart
+    res.status(201).json({ order: newOrder, orderItems, newCart });
   } catch (error) {
     console.error('Error creating order:', error);
     res.status(500).json({ error: 'Error creating order' });
@@ -69,6 +76,45 @@ exports.getUserOrders = async (req, res) => {
     res.status(500).json({ error: 'Error fetching orders' });
   }
 };
+
+// Obtener todos los items de órdenes específicas
+exports.getOrderItems = async (req, res) => {
+  try {
+    const userId = req.user.id;
+
+    // Find all orders for the user
+    const orders = await Order.findAll({
+      where: { userId }
+    });
+
+    // If no orders are found, return an error
+    if (orders.length === 0) {
+      return res.status(404).json({ error: 'No orders found for this user' });
+    }
+
+    // Extract the order IDs from the found orders
+    const orderIds = orders.map(order => order.id);
+
+    // Fetch all order items for the specified orders
+    const orderItems = await OrderItem.findAll({
+      where: {
+        orderId: orderIds  // Filter by the order IDs
+      }
+    });
+
+    // If no order items are found, return an error
+    if (orderItems.length === 0) {
+      return res.status(404).json({ error: 'No order items found for the specified orders' });
+    }
+
+    // Respond with the list of order items
+    res.json(orderItems);
+  } catch (error) {
+    console.error('Error fetching order items from specific orders:', error);
+    res.status(500).json({ error: 'Error fetching order items' });
+  }
+};
+
 
 // Obtener detalles de una orden específica
 exports.getOrderById = async (req, res) => {
